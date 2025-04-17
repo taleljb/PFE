@@ -5,6 +5,8 @@ import pfe.crud.Models.affhabilitie;
 import pfe.crud.Models.affHabilitieId;
 import pfe.crud.Repository.AffHabilitieRepository;
 import pfe.crud.Service.ServiceInterface.HabilitationService;
+import pfe.crudDTO.AffHabilitieRequestDto;
+import pfe.crudDTO.AffHabilitieResponseDto;
 
 import java.util.List;
 import java.util.Optional;
@@ -69,5 +71,24 @@ public class HabilitationServiceImpl implements HabilitationService {
         return habilitieRepository.findAll();
     }
 
+    public AffHabilitieResponseDto toDto(affhabilitie habilitie) {
+        return new AffHabilitieResponseDto(
+            habilitie.getHabIdenti(),
+            habilitie.getHabDebeff(),
+            habilitie.getHabLiblat(),
+            habilitie.getHabLibara(),
+            habilitie.getHabFineff()
+        );
+    }
 
+    // Méthode de conversion : DTO (Requête) -> Entité
+    public affhabilitie toEntity(AffHabilitieRequestDto requestDto) {
+        return new affhabilitie(
+            requestDto.getHabIdenti(),
+            requestDto.getHabDebeff(),
+            requestDto.getHabLiblat(),
+            requestDto.getHabLibara(),
+            requestDto.getHabFineff()
+        );
+    }
 }

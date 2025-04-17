@@ -2,6 +2,8 @@ package pfe.crud.Controller;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -20,20 +22,24 @@ import pfe.crud.Repository.AffUserProfilRepository;
 import pfe.crud.Service.ServiceImpl.UserprofilServiceImpl;
 import pfe.crud.Service.ServiceImpl.UserprofilServiceImpl;
 import pfe.crud.Service.ServiceInterface.UserprofilService;
+import pfe.crudDTO.AffUserProfilRequestDto;
+import pfe.crudDTO.AffUserProfilResponseDto;
 
 @RestController
 @RequestMapping("/api/userprofils")
 public class AffUserProfilController {
-private final UserprofilServiceImpl UserprofilService;
 
-    public AffUserProfilController(UserprofilServiceImpl UserprofilService) {
-        this.UserprofilService = UserprofilService;
+    private final UserprofilServiceImpl userprofilService;
+
+    public AffUserProfilController(UserprofilServiceImpl userprofilService) {
+        this.userprofilService = userprofilService;
     }
 
     @PostMapping("/create")
-    public ResponseEntity<String> createUser(@RequestBody AffUserProfil user) {
+    public ResponseEntity<String> createUser(@RequestBody AffUserProfilRequestDto dto) {
         try {
-        	UserprofilService.createuser(user);
+            AffUserProfil entity = userprofilService.toEntity(dto);
+            userprofilService.createuser(entity);
             return ResponseEntity.ok("Utilisateur créé avec succès");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body("Erreur : " + e.getMessage());
@@ -42,51 +48,67 @@ private final UserprofilServiceImpl UserprofilService;
 
     @PutMapping("/update/{prfIdenti}/{prfDebeff}")
     public ResponseEntity<String> update(
-            @PathVariable String prfIdenti, 
-            @PathVariable String prfDebeff, @RequestBody AffUserProfil user) {
-    	  try {
-    	        
-    	        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-    	        Date prfDebeffDate = format.parse(prfDebeff); 
-
-    	    
-    	        AffUserProfilId id = new AffUserProfilId(prfIdenti, prfDebeffDate);
-
-    	        UserprofilService.updateuser(user, id);
-
-    	    
-    	        return ResponseEntity.ok("Utilisateur mis à jour avec succès");
-    	    } catch (Exception e) {
-    	       
-    	        return ResponseEntity.badRequest().body("Erreur de format de date ou autre exception : " + e.getMessage());
-    	    }
+            @PathVariable String prfIdenti,
+            @PathVariable String prfDebeff,
+            @RequestBody AffUserProfilRequestDto dto) {
+        try {
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+            Date prfDebeffDate = format.parse(prfDebeff);
+            AffUserProfilId id = new AffUserProfilId(prfIdenti, prfDebeffDate);
+            AffUserProfil entity = userprofilService.toEntity(dto);
+            userprofilService.updateuser(entity, id);
+            return ResponseEntity.ok("Utilisateur mis à jour avec succès");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Erreur : " + e.getMessage());
+        }
     }
-@DeleteMapping("/delete/{prfIdenti}/{prfDebeff}")
-public ResponseEntity<String> delete(
-		@PathVariable String prfIdenti, 
-        @PathVariable String prfDebeff
-		)
-{
-	  try {
-	        
-	        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-	        Date prfDebeffDate = format.parse(prfDebeff); 
 
-	    
-	        AffUserProfilId id = new AffUserProfilId(prfIdenti, prfDebeffDate);
+    @DeleteMapping("/delete/{prfIdenti}/{prfDebeff}")
+    public ResponseEntity<String> delete(
+            @PathVariable String prfIdenti,
+            @PathVariable String prfDebeff) {
+        try {
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+            Date prfDebeffDate = format.parse(prfDebeff);
+            AffUserProfilId id = new AffUserProfilId(prfIdenti, prfDebeffDate);
+            userprofilService.deleteuser(id);
+            return ResponseEntity.ok("Utilisateur supprimé avec succès");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Erreur : " + e.getMessage());
+        }
+    }
+    @GetMapping("/{prfIdenti}/{prfDebeff}")
+    public ResponseEntity<?> getById(
+            @PathVariable String prfIdenti,
+            @PathVariable String prfDebeff) {
+        try {
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+            Date prfDebeffDate = format.parse(prfDebeff);
+            AffUserProfilId id = new AffUserProfilId(prfIdenti, prfDebeffDate);
 
-	        UserprofilService.deleteuser(id);
+            Optional<AffUserProfil> userOpt = userprofilService.getuser(id);
 
-	    
-	        return ResponseEntity.ok("Utilisateur supprimé avec succès");
-	    } catch (Exception e) {
-	       
-	        return ResponseEntity.badRequest().body("Erreur de format de date ou autre exception : " + e.getMessage());
-	    }
-	  
+            if (userOpt.isPresent()) {
+                AffUserProfilResponseDto dto = userprofilService.toDto(userOpt.get());
+                return ResponseEntity.ok(dto);
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Erreur : " + e.getMessage());
+        }
+    }
+    @GetMapping
+    public ResponseEntity<List<AffUserProfilResponseDto>> getAll() {
+        List<AffUserProfil> entities = userprofilService.getusers();
+        List<AffUserProfilResponseDto> dtos = entities.stream()
+                .map(userprofilService::toDto)
+                .toList();
+        return ResponseEntity.ok(dtos);
+    }
+
 }
 
 
 
 
-}

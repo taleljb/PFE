@@ -5,8 +5,11 @@ import pfe.crud.Models.AffUserProfil;
 import pfe.crud.Models.AffUserProfilId;
 import pfe.crud.Repository.AffUserProfilRepository;
 import pfe.crud.Service.ServiceInterface.UserprofilService;
+import pfe.crudDTO.AffUserProfilRequestDto;
+import pfe.crudDTO.AffUserProfilResponseDto;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -63,4 +66,30 @@ public class UserprofilServiceImpl implements UserprofilService {
 		return userRepository.findById(id);
 	
 	}
+	
+	public AffUserProfil toEntity(AffUserProfilRequestDto dto) {
+	    return new AffUserProfil(
+	        dto.getPrfIdenti(),
+	        dto.getPrfDebeff(),
+	        dto.getPrfLiblat(),
+	        dto.getPrfLibara(),
+	        dto.getPrfFineff()
+	    );
+	}
+
+	public AffUserProfilResponseDto toDto(AffUserProfil entity) {
+	    return new AffUserProfilResponseDto(
+	        entity.getPrfIdenti(),
+	        entity.getPrfDebeff(),
+	        entity.getPrfLiblat(),
+	        entity.getPrfLibara(),
+	        entity.getPrfFineff()
+	    );
+	}
+	@Override
+	public List<AffUserProfil> getusers() {
+		List<AffUserProfil> users = userRepository.findAll();
+		return users;
+	}
+
 }
