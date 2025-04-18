@@ -10,6 +10,10 @@ public class AffUsersDgaff {
     @Id
     @Column(name = "USR_IDENTI", length = 10)
     private String usrIdenti;
+    
+    
+    @Column(name = "password", length = 100)
+    private String password;
 
     @Column(name = "USR_NOMUSR", length = 100)
     private String usrNomusr;
@@ -31,15 +35,24 @@ public class AffUsersDgaff {
 
     public AffUsersDgaff() {}
 
-    public AffUsersDgaff(String usrIdenti, String usrNomusr, String usrPrenom, Date usrDatnai, AffUserProfil profil) {
+    public AffUsersDgaff(String usrIdenti, String usrNomusr,String password, String usrPrenom, Date usrDatnai, AffUserProfil profil) {
         this.usrIdenti = usrIdenti;
         this.usrNomusr = usrNomusr;
+        this.password = password;
+
         this.usrPrenom = usrPrenom;
         this.usrDatnai = usrDatnai;
         this.profil = profil;
     }
+    public String getPassword() {
+		return password;
+	}
 
-    public String getUsrIdenti() { return usrIdenti; }
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	public String getUsrIdenti() { return usrIdenti; }
     public void setUsrIdenti(String usrIdenti) { this.usrIdenti = usrIdenti; }
 
     public String getUsrNomusr() { return usrNomusr; }

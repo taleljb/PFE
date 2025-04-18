@@ -22,7 +22,6 @@ public class HabilitationServiceImpl implements HabilitationService {
 
     @Override
     public void createHabilitie(affhabilitie habilitie) {
-        // Vérifier que les informations requises sont présentes
         if (habilitie.getHabIdenti() == null || habilitie.getHabIdenti().isEmpty()) {
             throw new IllegalArgumentException("Identifiant de l'habilitation doit être fourni");
         }

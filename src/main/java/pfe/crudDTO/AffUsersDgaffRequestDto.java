@@ -6,14 +6,22 @@ public class AffUsersDgaffRequestDto {
 
     private String usrIdenti;
     private String usrNomusr;
-    private String usrPrenom;
+    private String password;
+	private String usrPrenom;
     private Date usrDatnai;
 
     // Clé étrangère vers AffUserProfil
     private String prfIdenti;
     private Date prfDebeff;
 
-    // Getters & Setters
+    public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
 
     public String getUsrIdenti() {
         return usrIdenti;

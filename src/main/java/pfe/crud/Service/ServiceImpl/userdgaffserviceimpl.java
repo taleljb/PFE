@@ -1,7 +1,10 @@
 package pfe.crud.Service.ServiceImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.springframework.stereotype.Service;
 
+import jakarta.persistence.EntityNotFoundException;
 import pfe.crud.Models.AffUserProfil;
 import pfe.crud.Models.AffUsersDgaff;
 import pfe.crud.Repository.AffUsersDgaffRepository;
@@ -16,6 +19,7 @@ import java.util.Optional;
 public class userdgaffserviceimpl implements userdgaffservice {
 
     private final AffUsersDgaffRepository repository;
+    private static final Logger logger = LoggerFactory.getLogger(userdgaffserviceimpl.class);
 
     public userdgaffserviceimpl(AffUsersDgaffRepository repository) {
         this.repository = repository;
@@ -26,6 +30,8 @@ public class userdgaffserviceimpl implements userdgaffservice {
         repository.save(user);
     }
 
+    
+    
     @Override
     public void update(String id, AffUsersDgaff user) {
         if (repository.existsById(id)) {
@@ -36,10 +42,19 @@ public class userdgaffserviceimpl implements userdgaffservice {
         }
     }
 
+    
+  /*  public void delete(String id) {
+    	
+        repository.deleteById(id);
+    }*/
     @Override
     public void delete(String id) {
+        if (!repository.existsById(id)) {
+            throw new EntityNotFoundException("Utilisateur non trouvé avec l'identifiant : " + id);
+        }
         repository.deleteById(id);
     }
+
 
     @Override
     public Optional<AffUsersDgaff> getById(String id) {
@@ -54,8 +69,11 @@ public class userdgaffserviceimpl implements userdgaffservice {
         AffUsersDgaffResponseDto dto = new AffUsersDgaffResponseDto();
         dto.setUsrIdenti(user.getUsrIdenti());
         dto.setUsrNomusr(user.getUsrNomusr());
+        dto.setPassword(user.getPassword());
         dto.setUsrPrenom(user.getUsrPrenom());
         dto.setUsrDatnai(user.getUsrDatnai());
+    	logger.info("voici le mot de passe de ce user : {}", user.getPassword());
+    	logger.info("voici le mot de passe de ce user : {}", dto.getPassword());
 
         if (user.getProfil() != null) {
             dto.setPrfIdenti(user.getProfil().getPrfIdenti());
@@ -70,6 +88,7 @@ public class userdgaffserviceimpl implements userdgaffservice {
         AffUsersDgaff user = new AffUsersDgaff();
         user.setUsrIdenti(dto.getUsrIdenti());
         user.setUsrNomusr(dto.getUsrNomusr());
+        user.setPassword(dto.getPassword());
         user.setUsrPrenom(dto.getUsrPrenom());
         user.setUsrDatnai(dto.getUsrDatnai());
 
@@ -77,7 +96,6 @@ public class userdgaffserviceimpl implements userdgaffservice {
             AffUserProfil profil = new AffUserProfil();
             profil.setPrfIdenti(dto.getPrfIdenti());
             profil.setPrfDebeff(dto.getPrfDebeff());
-            // Optionnel : setPrfLiblat/Libara si disponibles dans la BDD (sinon laisser à null)
 
             user.setProfil(profil);
         }

@@ -5,6 +5,7 @@ import java.util.Date;
 public class AffUsersDgaffResponseDto {
 
     private String usrIdenti;
+    private String password;
     private String usrNomusr;
     private String usrPrenom;
     private Date usrDatnai;
@@ -14,7 +15,14 @@ public class AffUsersDgaffResponseDto {
     private String prfLiblat;
     private String prfLibara;
 
-    // Getters & Setters
+    
+    public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
 
     public String getUsrIdenti() {
         return usrIdenti;

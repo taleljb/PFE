@@ -2,8 +2,11 @@
 
 package pfe.crud.Controller;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import jakarta.persistence.EntityNotFoundException;
 import pfe.crud.Models.AffUsersDgaff;
 import pfe.crud.Repository.AffUserProfilRepository;
 import pfe.crud.Models.AffUserProfil;
@@ -33,48 +36,14 @@ public class AffUsersDgaffController {
 		this.profilRepository = profilRepository;
     }
 
-    // Créer un utilisateur
-    @PostMapping("/create")
-    public ResponseEntity<String> create(AffUsersDgaff userDgaff) {
-        // Récupérer la clé composée
-        AffUserProfilId profilId = new AffUserProfilId();
-        profilId.setPrfIdenti(userDgaff.getProfil().getPrfIdenti());
-        profilId.setPrfDebeff(userDgaff.getProfil().getPrfDebeff());
 
-        // Récupérer le profil existant
-        AffUserProfil profil = profilRepository.findById(profilId)
-            .orElseThrow(() -> new RuntimeException("Profil introuvable"));
-
-        // Attacher à l’objet principal
-        userDgaff.setProfil(profil);
-
-        return ResponseEntity.ok("Utilisateur créé avec succès");
-    }
-  /*  @PostMapping("/create")
-    public ResponseEntity<String> create(@RequestBody AffUsersDgaffRequestDto dto) {
-        try {
-        	AffUsersDgaff user = userServiceImpl.mapToEntity(dto);
-        	  AffUserProfilId profilId = new AffUserProfilId();
-              profilId.setPrfIdenti(user.getProfil().getPrfIdenti());
-              profilId.setPrfDebeff(user.getProfil().getPrfDebeff());
-
-              // Récupérer le profil existant
-              AffUserProfil profil = profilRepository.findById(profilId)
-                  .orElseThrow(() -> new RuntimeException("Profil introuvable"));
-
-              // Attacher à l’objet principal
-              user.setProfil(profil);
-            userService.create(user);
-            return ResponseEntity.ok("Utilisateur créé avec succès");
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Erreur lors de la création : " + e.getMessage());
-        }
-    }*/
     @PostMapping("/create")
     public ResponseEntity<String> create(@RequestBody AffUsersDgaffRequestDto dto) {
         try {
             // Mapper le DTO vers l'entité AffUsersDgaff
+            System.out.println("voici le mot de passe de ce dto" + dto.getPassword());
             AffUsersDgaff user = userServiceImpl.mapToEntity(dto);
+            System.out.println("voici le mot de passe de ce user" + user.getPassword());
             AffUserProfilId profilId = new AffUserProfilId();
             profilId.setPrfIdenti(user.getProfil().getPrfIdenti());
             profilId.setPrfDebeff(user.getProfil().getPrfDebeff());
@@ -108,16 +77,19 @@ public class AffUsersDgaffController {
         }
     }
 
-    // Supprimer un utilisateur
+
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> delete(@PathVariable String id) {
         try {
             userService.delete(id);
             return ResponseEntity.ok("Utilisateur supprimé avec succès");
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Erreur lors de la suppression : " + e.getMessage());
         }
     }
+
 
     // Récupérer un utilisateur par ID
     @GetMapping("/get/{id}")
@@ -130,6 +102,8 @@ public class AffUsersDgaffController {
             return ResponseEntity.notFound().build();
         }
     }
+    
+
 
     // Récupérer tous les utilisateurs
     @GetMapping("/getAll")
